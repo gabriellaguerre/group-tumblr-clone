@@ -17,7 +17,7 @@ const PostForm = () => {
         e.preventDefault();
         setHasSubmitted(true);
 
-        if (!errors.length) {
+        if (content.length > 0) {
             const formData = new FormData();
             formData.append("image", image);
             formData.append("content", content);
@@ -42,7 +42,7 @@ const PostForm = () => {
     return (
         <form encType="multipart/form-data" id="post-form" onSubmit={handleSubmit}>
             <div className="modalBackground">
-                <div className="modalContainer">
+                <div className="modalContainer editpost">
                     <div className="title">Create a Post!</div>
                     <div className='errorsBox'>
                         <ul className='errors'>
@@ -51,6 +51,7 @@ const PostForm = () => {
                         ))}
                         </ul>
                     </div>
+                    {(imageLoading)&& <div className="loadingDiv">Loading...</div>}
                     <div className="create-post-form">
                         <div>
                             <div>Write something: </div>
@@ -71,7 +72,7 @@ const PostForm = () => {
                         </div>
                         <div className="footer">
                             <div><button className="buttonDesign" type='submit'>Post</button></div>
-                            {(imageLoading)&& <p>Loading...</p>}
+                            
                         </div>
                     </div>
                 </div>

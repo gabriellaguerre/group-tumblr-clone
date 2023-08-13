@@ -37,7 +37,7 @@ export const getAllPosts = () => async (dispatch) => {
 			"Content-Type": "application/json",
 		},
     });
-
+    
     if (response.ok) {
         const data = await response.json();
         dispatch(getAllPostsAction(data));
@@ -52,26 +52,13 @@ export const createNewPost = (post) => async (dispatch) => {
 
     if (response.ok) {
         const resPost = await response.json();
-        dispatch(createPost(resPost))
-        if (resPost.image) {
-            dispatch(imagesActions.createNewImage(resPost))
+        dispatch(createPost(resPost.post))
+        if (resPost.image) {   
+            await dispatch(imagesActions.createNewImage(resPost.image))
         }
         
     } else {
         console.log("there was an error making your post!")
-    }
-}
-
-export const repost = (postId) => async (dispatch) => {
-    const response = await fetch(`/api/posts/${postId}/repost`, {
-        method: "POST",
-  
-    })
-    if (response.ok) {
-        const data = await response.json()
-        dispatch(postRepost(data))
-    } else {
-        return response.errors;
     }
 }
 
@@ -82,14 +69,26 @@ export const editPost = (postId, post) => async (dispatch) => {
     })
     
     if (response.ok) {
-        const data = await response.json();
-        dispatch(editPostAction(data.post))
-        if (data.image) {
-            dispatch(imagesActions.editImage(data.image))
+        const resPost = await response.json();
+        dispatch(editPostAction(resPost.post))
+        if (resPost.image) {
+            dispatch(imagesActions.editImage(resPost.image))
         }
         
     } else {
         console.log('there was an error making your post!')
+    }
+}
+
+export const repost = (postId) => async (dispatch) => {
+    const response = await fetch(`/api/posts/${postId}/repost`, {
+        method: "POST",
+    })
+    if (response.ok) {
+        const data = await response.json()
+        dispatch(postRepost(data.post))
+    } else {
+        return response.errors;
     }
 }
 
@@ -111,10 +110,10 @@ export default function reducer(state = initialState, action) {
             action.payload.posts.forEach(post => newState[post.id] = post);
             return newState;
         case CREATE_POST:
-            newState[action.payload.post.id] = action.payload.post;
+            newState[action.payload.id] = action.payload;
             return newState;
         case ADD_REPOST:
-            newState[action.payload.post.id] = action.payload.post;
+            newState[action.payload.id] = action.payload;
             return newState;
         case EDIT_POST:
             newState[action.payload.id] = action.payload;
@@ -122,7 +121,7 @@ export default function reducer(state = initialState, action) {
         case DELETE_POST:
             delete newState[action.payload];
             return newState;
-        default:
-            return newState;
+    default:
+        return newState;
     }
 }
