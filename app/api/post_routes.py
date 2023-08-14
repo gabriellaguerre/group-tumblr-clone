@@ -45,17 +45,21 @@ def new_post():
             image.filename = get_unique_filename(image.filename)
             upload = upload_file_to_s3(image)
 
+
             if "url" not in upload:
                 return validation_errors_to_error_messages(upload)
-                
+
             url = upload["url"]
-            image = Image(imageUrl=url, postId=post.id)
-            db.session.add(image)
+
+            new_image = Image(imageUrl=url, postId=post.id)
+            db.session.add(new_image)
             db.session.commit()
+
+
             return {'post': post.to_dict(), 'image': image.to_dict()}
-        
+     
         return {'post': post.to_dict()}
-    
+
     return validation_errors_to_error_messages(post_form.errors)
 
 @post_routes.route('/<int:postId>', methods=['PUT'])
@@ -70,30 +74,30 @@ def edit_post(postId):
         post.updated_at = datetime.now()
         db.session.commit()
         old_image = Image.query.filter_by(postId = postId).first()
-        
+
         if (post_form.data['image']):
-    
+
             image = post_form.data['image']
             image.filename = get_unique_filename(image.filename)
             upload = upload_file_to_s3(image)
 
             if "url" not in upload:
                 return validation_errors_to_error_messages(upload)
-             
+
             url = upload["url"]
 
             if (old_image):
                 old_image.imageUrl = url
                 db.session.commit()
                 return {'post': post.to_dict(), 'image': old_image.to_dict()}
-            
+
             new_image = Image(imageUrl=url, postId=postId)
             db.session.add(new_image)
             db.session.commit()
             return {'post': post.to_dict(), 'image': new_image.to_dict()}
-        
-        return {'post': post.to_dict()} 
-    
+
+        return {'post': post.to_dict()}
+
     return validation_errors_to_error_messages(post_form.errors)
 
 @post_routes.route('/<int:postId>', methods=['DELETE'])

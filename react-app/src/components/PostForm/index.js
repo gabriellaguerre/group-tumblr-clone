@@ -72,7 +72,7 @@ const PostForm = () => {
                         </div>
                         <div className="footer">
                             <div><button className="buttonDesign" type='submit'>Post</button></div>
-                            
+
                         </div>
                     </div>
                 </div>

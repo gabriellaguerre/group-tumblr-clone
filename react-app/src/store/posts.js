@@ -37,7 +37,7 @@ export const getAllPosts = () => async (dispatch) => {
 			"Content-Type": "application/json",
 		},
     });
-    
+
     if (response.ok) {
         const data = await response.json();
         dispatch(getAllPostsAction(data));
@@ -45,6 +45,7 @@ export const getAllPosts = () => async (dispatch) => {
 }
 
 export const createNewPost = (post) => async (dispatch) => {
+
     const response = await fetch("/api/posts", {
         method: "POST",
         body: post
@@ -52,11 +53,12 @@ export const createNewPost = (post) => async (dispatch) => {
 
     if (response.ok) {
         const resPost = await response.json();
+
         dispatch(createPost(resPost.post))
-        if (resPost.image) {   
+        if (resPost.image) {
             await dispatch(imagesActions.createNewImage(resPost.image))
         }
-        
+
     } else {
         console.log("there was an error making your post!")
     }
@@ -67,14 +69,14 @@ export const editPost = (postId, post) => async (dispatch) => {
         method: "PUT",
         body: post
     })
-    
+
     if (response.ok) {
         const resPost = await response.json();
         dispatch(editPostAction(resPost.post))
         if (resPost.image) {
             dispatch(imagesActions.editImage(resPost.image))
         }
-        
+
     } else {
         console.log('there was an error making your post!')
     }
